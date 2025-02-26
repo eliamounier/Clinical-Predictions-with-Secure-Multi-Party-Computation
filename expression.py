@@ -39,15 +39,18 @@ class Expression:
         self.id = id
 
     def __add__(self, other):
-        raise NotImplementedError("You need to implement this method.")
+        return self.value + other.value
+        #raise NotImplementedError("You need to implement this method.")
 
 
     def __sub__(self, other):
-        raise NotImplementedError("You need to implement this method.")
+        return self.value - other.value
+        #raise NotImplementedError("You need to implement this method.")
 
 
     def __mul__(self, other):
-        raise NotImplementedError("You need to implement this method.")
+        return self.value * other.value
+        #raise NotImplementedError("You need to implement this method.")
 
 
     def __hash__(self):
@@ -85,8 +88,10 @@ class Secret(Expression):
 
     def __init__(
             self,
+            value:int,
             id: Optional[bytes] = None
         ):
+        self.value = value
         super().__init__(id)
 
 
@@ -94,9 +99,18 @@ class Secret(Expression):
         return (
             f"{self.__class__.__name__}({self.value if self.value is not None else ''})"
         )
+    
+    def __get__(self):
+        return self.value
 
 
     # Feel free to add as many methods as you like.
 
 
 # Feel free to add as many classes as you like.
+
+a = Secret()
+b = Secret(3)
+expr = a + b
+print(repr(expr))
+
