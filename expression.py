@@ -39,17 +39,17 @@ class Expression:
         self.id = id
 
     def __add__(self, other):
-        return self.value + other.value
+        return AddOp(self, other)
         #raise NotImplementedError("You need to implement this method.")
 
 
     def __sub__(self, other):
-        return self.value - other.value
+        return SubOp(self, other)
         #raise NotImplementedError("You need to implement this method.")
 
 
     def __mul__(self, other):
-        return self.value * other.value
+        return MultOp(self, other)
         #raise NotImplementedError("You need to implement this method.")
 
 
@@ -99,9 +99,6 @@ class Secret(Expression):
         return (
             f"{self.__class__.__name__}({self.value if self.value is not None else ''})"
         )
-    
-    def __get__(self):
-        return self.value
 
 
     # Feel free to add as many methods as you like.
@@ -109,8 +106,35 @@ class Secret(Expression):
 
 # Feel free to add as many classes as you like.
 
-a = Secret()
+class AddOp(Expression):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def __repr__(self):
+        return f"({self.a} + {self.b})"
+
+class MultOp(Expression):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def __repr__(self):
+        return f"({self.a} * {self.b})"
+
+
+class SubOp(Expression):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def __repr__(self):
+        return f"({self.a} - {self.b})"
+
+a = Secret(4)
 b = Secret(3)
 expr = a + b
 print(repr(expr))
+print(expr.value)
+print(a.value)  
 

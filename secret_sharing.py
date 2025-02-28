@@ -85,3 +85,5 @@ def reconstruct_secret(shares: List[Share]) -> int:
 
 print(share_secret(10, 3))
 print(reconstruct_secret(share_secret(10, 3)))
+for i in range(3):
+    print(share_secret(10, 3)[i].id)
