@@ -36,31 +36,13 @@ class Share:
         return f"Share({self.value}, {self.id})"
 
     def __add__(self, other):
-        if isinstance(other, int):
-            return Share(self.value + other)
         return Share(self.value + other.value)
 
-    def __radd__(self, other):
-        if isinstance(other, int):
-            return Share(other + self.value)
-
     def __sub__(self, other):
-        if isinstance(other, int):
-            return Share(self.value - other)
         return Share(self.value - other.value)
 
-    def __rsub__(self, other):
-        if isinstance(other, int):
-           return Share(other - self.value)
-
     def __mul__(self, other):
-        if isinstance(other, int):
-            return Share(self.value * other)
         return Share(self.value * other.value)
-
-    def __rmul__(self, other):
-        if isinstance(other, int):
-            return Share(other * self.value)
 
     def serialize(self):
         """Generate a representation suitable for passing in a message."""
