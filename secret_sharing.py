@@ -44,6 +44,9 @@ class Share:
     def __mul__(self, other):
         return Share(self.value * other.value)
 
+    def withId(self, new_id: bytes):
+        return Share(self.value, new_id)
+
     def serialize(self):
         """Generate a representation suitable for passing in a message."""
         return json.dumps({'id': self.id.hex(), 'value': self.value})

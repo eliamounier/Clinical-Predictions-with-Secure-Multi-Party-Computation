@@ -91,7 +91,7 @@ class SMCParty:
         if isinstance(expr, AddOp):
             a = self.process_expression(expr.a)
             b = self.process_expression(expr.b)
-            new_share = a + b
+            new_share = (a + b).withId(expr.id)
             self.comm.publish_message(expr.id, new_share.serialize())
             return new_share
         
@@ -101,7 +101,7 @@ class SMCParty:
         elif isinstance(expr, SubOp):
             a = self.process_expression(expr.a)
             b = self.process_expression(expr.b)
-            new_share = a - b
+            new_share = (a - b).withId(expr.id)
             self.comm.publish_message(expr.id, new_share.serialize())
             return new_share
         
@@ -112,9 +112,9 @@ class SMCParty:
             return self.shares_dict[expr.id]
         elif isinstance(expr, Scalar):
             if self.protocol_spec.participant_ids.index(self.client_id) == 0:
-                return Share(expr.value)
+                return Share(expr.value, id=expr.id)
             else:
-                return Share(0)
+                return Share(0, id=expr.id)
         else:
             raise ValueError(f"Unknown expression type: {expr}")
         # Call specialized methods for each expression type, and have these specialized

@@ -4,20 +4,14 @@ Trusted parameters generator.
 MODIFY THIS FILE.
 """
 
-import collections
-from typing import (
-    Dict,
-    Set,
-    Tuple,
-)
+from typing import Dict, Set, Tuple
 
-from communication import Communication
-from secret_sharing import(
+from secret_sharing import (
     share_secret,
     Share,
 )
 
-# Feel free to add as many imports as you want.
+from random import getrandbits
 
 
 class TrustedParamGenerator:
@@ -27,7 +21,7 @@ class TrustedParamGenerator:
 
     def __init__(self):
         self.participant_ids: Set[str] = set()
-
+        self.triplet_shares: Dict[str, Dict[Tuple[Share, Share, Share]]] = {}
 
     def add_participant(self, participant_id: str) -> None:
         """
@@ -39,6 +33,25 @@ class TrustedParamGenerator:
         """
         Retrieve a triplet of shares for a given client_id.
         """
-        raise NotImplementedError("You need to implement this method.")
+        if op_id not in self.triplet_shares:
+            self.generate_triplet(op_id)
+        return self.triplet_shares[op_id][client_id]
 
-    # Feel free to add as many methods as you want.
+    def generate_triplet(self, op_id: str):
+        a = getrandbits(255)
+        b = getrandbits(255)
+        c = a * b
+        number_of_participants = len(self.participant_ids)
+        self.triplet_shares[op_id] = dict(
+            zip(
+                self.participant_ids,
+                list(
+                    zip(
+                        share_secret(a, number_of_participants),
+                        share_secret(b, number_of_participants),
+                        share_secret(c, number_of_participants),
+                    )
+                ),
+            )
+        )
+        print(self.triplet_shares)
