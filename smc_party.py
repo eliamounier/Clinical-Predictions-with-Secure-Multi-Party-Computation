@@ -15,10 +15,7 @@ from typing import (
 )
 
 from communication import Communication
-from expression import (
-    Expression,
-    Secret
-)
+from expression import *
 from protocol import ProtocolSpec
 from secret_sharing import(
     reconstruct_secret,
@@ -65,81 +62,66 @@ class SMCParty:
         expr = self.protocol_spec.expr
 
         # Step 1: Share the secrets.
-        parties = self.protocol_spec.participants_ids
+        parties = self.protocol_spec.participant_ids
         num_shares = len(parties)
 
         for secret in self.value_dict:
             shares = share_secret(self.value_dict[secret], num_shares)
             for i, party in enumerate(parties):
-                self.comm.send_private_message(party, secret.id,shares[i])
+                self.comm.send_private_message(party, secret.id, shares[i].serialize())
         
         # Step 2: Receive the shares.
-        shares_dict = collections.defaultdict(dict)
-        for party in parties:
-            for secret in self.value_dict:
-                label = secret.id
-                message = self.comm.retrieve_private_message(self.client_id, label)
-                shares_dict[party][secret] = message
+        self.shares_dict: Dict[str, Share] = {}
+        # for party in parties:
+        #     for secret in self.value_dict:
+        #         share = Share.deserialize(self.comm.retrieve_private_message(secret.id))
+        #         self.shares_dict[secret.id] = share
 
-        # Step 3: Process the expression.
-        for party in parties:
-            self.shares_dict = shares_dict
-            result = self.process_expression(expr)
-            self.comm.send_public_message(party, expr.id, result)
-
-
-        raise NotImplementedError("You need to implement this method.")
-
+        self.process_expression(expr)
+        shares = [Share.deserialize(self.comm.retrieve_public_message(sender_id, expr.id)) for sender_id in self.protocol_spec.participant_ids]
+        result = reconstruct_secret(shares)
+        print(result)
+        return result
 
     # Suggestion: To process expressions, make use of the *visitor pattern* like so:
     def process_expression(
             self,
             expr: Expression
         ):
+        print(f"{'=' * 100} THE ONLY CALLS THAT MATTERS {repr(expr)}")
         if isinstance(expr, AddOp):
-            self.process_add_op(expr)
+            a = self.process_expression(expr.a)
+            b = self.process_expression(expr.b)
+            new_share = a + b
+            self.comm.publish_message(expr.id, new_share.serialize())
+            return new_share
+        
         elif isinstance(expr, MulOp):
-            self.process_mul_op(expr)
+            raise NotImplementedError()
+        
         elif isinstance(expr, SubOp):
-            self.process_sub_op(expr)
+            a = self.process_expression(expr.a)
+            b = self.process_expression(expr.b)
+            new_share = a - b
+            self.comm.publish_message(expr.id, new_share.serialize())
+            return new_share
+        
         elif isinstance(expr, Secret):
-            self.process_secret(expr)
+            if expr.id not in self.shares_dict:
+                share = Share.deserialize(self.comm.retrieve_private_message(expr.id))
+                self.shares_dict[expr.id] = share
+            return self.shares_dict[expr.id]
         elif isinstance(expr, Scalar):
-            self.process_scalar(expr)
+            if self.protocol_spec.participant_ids.index(self.client_id) == 0:
+                print(f"{'=' * 100} THE ONLYS CALLS THAT MATTERS {expr.value}")
+                return Share(expr.value)
+            else:
+                return Share(0)
         else:
             raise ValueError(f"Unknown expression type: {expr}")
         # Call specialized methods for each expression type, and have these specialized
         # methods in turn call `process_expression` on their sub-expressions to process
         # further.
-    
-    def process_add_op(self, expr: AddOp):
-        a = self.process_expression(expr.left)
-        b = self.process_expression(expr.right)
-        # Process further the left and right sub-expressions of the addition operation.
-        return a + b
-
-    def process_mul_op(self, expr: MulOp):
-        a = self.process_expression(expr.left)
-        b = self.process_expression(expr.right)
-        # Process further the left and right sub-expressions of the multiplication operation.
-        return a * b
-    
-    def process_sub_op(self, expr: SubOp):
-        a = self.process_expression(expr.left)
-        b = self.process_expression(expr.right)
-        # Process further the left and right sub-expressions of the subtraction operation.
-        return a - b
-
-    def process_secret(self, expr: Secret, party_id: str):
-        # Process the secret expression.
-
-        return self.shares_dict[party_id][expr]
-    
-    def process_scalar(self, expr: Scalar):
-        # Process the scalar expression.
-        return expr.value
-    
-
 
 
     # Feel free to add as many methods as you want.

@@ -40,17 +40,14 @@ class Expression:
 
     def __add__(self, other):
         return AddOp(self, other)
-        #raise NotImplementedError("You need to implement this method.")
 
 
     def __sub__(self, other):
         return SubOp(self, other)
-        #raise NotImplementedError("You need to implement this method.")
 
 
     def __mul__(self, other):
-        return MultOp(self, other)
-        #raise NotImplementedError("You need to implement this method.")
+        return MulOp(self, other)
 
 
     def __hash__(self):
@@ -88,16 +85,14 @@ class Secret(Expression):
 
     def __init__(
             self,
-            value:int,
             id: Optional[bytes] = None
         ):
-        self.value = value
         super().__init__(id)
 
 
     def __repr__(self):
         return (
-            f"{self.__class__.__name__}({self.value if self.value is not None else ''})"
+            f"{self.__class__.__name__}()"
         )
 
 
@@ -107,34 +102,30 @@ class Secret(Expression):
 # Feel free to add as many classes as you like.
 
 class AddOp(Expression):
-    def __init__(self, a, b):
+    def __init__(self, a, b, id: Optional[bytes] = None):
         self.a = a
         self.b = b
+        super().__init__(id)
 
     def __repr__(self):
         return f"({self.a} + {self.b})"
 
-class MultOp(Expression):
-    def __init__(self, a, b):
+class MulOp(Expression):
+    def __init__(self, a, b, id: Optional[bytes] = None):
         self.a = a
         self.b = b
+        super().__init__(id)
 
     def __repr__(self):
         return f"({self.a} * {self.b})"
 
 
 class SubOp(Expression):
-    def __init__(self, a, b):
+    def __init__(self, a, b, id: Optional[bytes] = None):
         self.a = a
         self.b = b
+        super().__init__(id)
 
     def __repr__(self):
         return f"({self.a} - {self.b})"
-
-a = Secret(4)
-b = Secret(3)
-expr = a + b
-print(repr(expr))
-print(expr.value)
-print(a.value)  
 

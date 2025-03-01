@@ -4,10 +4,12 @@ Secret sharing scheme.
 
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 import random
 import time
 import base64
+
+import json
 
 ID_BYTES = 4
 
@@ -32,45 +34,51 @@ class Share:
     def __repr__(self):
         # Helps with debugging.
         return f"Share({self.value}, {self.id})"
-        #raise NotImplementedError("You need to implement this method.")
 
     def __add__(self, other):
-        return Share(self.value + other.value, self.id)
-        #raise NotImplementedError("You need to implement this method.")
+        if isinstance(other, int):
+            return Share(self.value + other)
+        return Share(self.value + other.value)
+
+    def __radd__(self, other):
+        if isinstance(other, int):
+            return Share(other + self.value)
 
     def __sub__(self, other):
-        return Share(self.value - other.value, self.id)
-        #raise NotImplementedError("You need to implement this method.")
+        if isinstance(other, int):
+            return Share(self.value - other)
+        return Share(self.value - other.value)
+
+    def __rsub__(self, other):
+        if isinstance(other, int):
+           return Share(other - self.value)
 
     def __mul__(self, other):
-        return Share(self.value * other.value, self.id)
-        #raise NotImplementedError("You need to implement this method.")
+        if isinstance(other, int):
+            return Share(self.value * other)
+        return Share(self.value * other.value)
+
+    def __rmul__(self, other):
+        if isinstance(other, int):
+            return Share(other * self.value)
 
     def serialize(self):
         """Generate a representation suitable for passing in a message."""
-        raise NotImplementedError("You need to implement this method.")
+        return json.dumps({'id': self.id.hex(), 'value': self.value})
 
     @staticmethod
     def deserialize(serialized) -> Share:
         """Restore object from its serialized representation."""
-        raise NotImplementedError("You need to implement this method.")
+        data = json.loads(serialized)
+        return Share(data['value'], bytes.fromhex(data['id']))
 
 
 def share_secret(secret: int, num_shares: int) -> List[Share]:
     """Generate secret shares."""
-    share = []
-    seed = time.time()
-    random.seed(seed)
-
-    for i in range(num_shares -1):
-        val = random.randint(0, secret)
-        share.append(Share(val))
-        secret -= val
-    share.append(Share(secret))
-    return share
-
-    #raise NotImplementedError("You need to implement this method.")
-
+    shares = [random.randint(-abs(secret), abs(secret)) for _ in range(num_shares - 1)]
+    last_share = secret - sum(shares)
+    shares.append(last_share)
+    return list(map(lambda value: Share(value), shares))
 
 def reconstruct_secret(shares: List[Share]) -> int:
     """Reconstruct the secret from shares."""
@@ -78,12 +86,6 @@ def reconstruct_secret(shares: List[Share]) -> int:
     for share in shares:
         secret += share.value
     return secret
-    #raise NotImplementedError("You need to implement this method.")
 
 
 # Feel free to add as many methods as you want.
-
-print(share_secret(10, 3))
-print(reconstruct_secret(share_secret(10, 3)))
-for i in range(3):
-    print(share_secret(10, 3)[i].id)

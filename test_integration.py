@@ -74,6 +74,21 @@ def suite(parties, expr, expected):
     for result in results:
         assert result == expected
 
+def test_suite0():
+    """
+    f(a, b, c) = a + b
+    """
+    alice_secret = Secret()
+    bob_secret = Secret()
+
+    parties = {
+        "Alice": {alice_secret: 3},
+        "Bob": {bob_secret: 14},
+    }
+
+    expr = (alice_secret + bob_secret + Scalar(4) + bob_secret)
+    expected = 3 + 14 + 4 + 14 
+    suite(parties, expr, expected)
 
 def test_suite1():
     """
