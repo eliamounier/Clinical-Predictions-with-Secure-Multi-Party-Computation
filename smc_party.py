@@ -88,7 +88,6 @@ class SMCParty:
             self,
             expr: Expression
         ):
-        print(f"{'=' * 100} THE ONLY CALLS THAT MATTERS {repr(expr)}")
         if isinstance(expr, AddOp):
             a = self.process_expression(expr.a)
             b = self.process_expression(expr.b)
@@ -113,7 +112,6 @@ class SMCParty:
             return self.shares_dict[expr.id]
         elif isinstance(expr, Scalar):
             if self.protocol_spec.participant_ids.index(self.client_id) == 0:
-                print(f"{'=' * 100} THE ONLYS CALLS THAT MATTERS {expr.value}")
                 return Share(expr.value)
             else:
                 return Share(0)
