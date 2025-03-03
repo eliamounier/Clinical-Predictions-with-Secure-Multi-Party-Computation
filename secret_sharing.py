@@ -42,7 +42,11 @@ class Share:
         return Share(self.value - other.value)
 
     def __mul__(self, other):
-        return Share(self.value * other.value)
+        if isinstance(other, Share):
+            return Share(self.value * other.value, self.id)
+        else:
+            return Share(self.value * other, self.id) # scalar multiplication
+
 
     def withId(self, new_id: bytes):
         return Share(self.value, new_id)
@@ -56,8 +60,7 @@ class Share:
         """Restore object from its serialized representation."""
         data = json.loads(serialized)
         return Share(data['value'], bytes.fromhex(data['id']))
-
-
+    
 def share_secret(secret: int, num_shares: int) -> List[Share]:
     """Generate secret shares."""
     shares = [random.randint(-abs(secret), abs(secret)) for _ in range(num_shares - 1)]

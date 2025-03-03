@@ -95,8 +95,33 @@ class SMCParty:
             self.comm.publish_message(expr.id, new_share.serialize())
             return new_share
         
+      
         elif isinstance(expr, MulOp):
-            raise NotImplementedError()
+            s = self.process_expression(expr.a)
+            v = self.process_expression(expr.b)
+            a_beav, b_beav, c_beav = self.comm.retrieve_beaver_triplet_shares(expr.id)
+
+            # Step 1. "Each party computes locally a share of [d] = [s-a] and broadcasts it. Then each party reconstructs d."
+            d = s - a_beav
+            self.comm.publish_message(f"d_{expr.id}", d.serialize())
+            d_shares = [Share.deserialize(self.comm.retrieve_public_message(sender_id, f"d_{expr.id}")) for sender_id in self.protocol_spec.participant_ids]
+            d_val = reconstruct_secret(d_shares)
+            
+            # Step 2. " Each party computes locally a share of [e] = [v-b] and broadcasts it. Then each party reconstructs e."  
+            e = v - b_beav
+            self.comm.publish_message(f"e_{expr.id}", e.serialize())
+            e_shares = [Share.deserialize(self.comm.retrieve_public_message(sender_id, f"e_{expr.id}")) for sender_id in self.protocol_spec.participant_ids]
+            e_val = reconstruct_secret(e_shares)
+
+            # Step 3. Locally computes: [t] = [c] + [s]*[e] + [v]*[d] - [d]*[e]
+            t = c_beav + (s*e_val) + (v*d_val) 
+            
+            if self.protocol_spec.participant_ids.index(self.client_id) == 0: # Only one party should add the constant term [d]*[e]
+                t -= Share(d_val * e_val, t.id) #
+
+            t = t.withId(expr.id)
+            self.comm.publish_message(expr.id, t.serialize())
+            return t
         
         elif isinstance(expr, SubOp):
             a = self.process_expression(expr.a)
