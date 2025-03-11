@@ -195,7 +195,7 @@ def experiment_2():
 		"Bob": {bob_secret: 14},
 	}
 
-	number_of_addition_operations = [10, 100, 500, 100]
+	number_of_addition_operations = [10, 50, 100, 200, 500, 700, 1000]
 
 	results: dict[int, List[int]] = {}
 	repeats = 10
@@ -231,7 +231,7 @@ def experiment_3():
 		"Bob": {},
 	}
 
-	number_of_addition_of_scalars = [10, 100, 500, 100]
+	number_of_addition_of_scalars = [10, 50, 100, 200, 500, 700, 1000]
 
 	results: dict[int, List[int]] = {}
 	repeats = 10
@@ -269,7 +269,7 @@ def experiment_4():
 		"Bob": {bob_secret: 14},
 	}
 
-	number_of_addition_of_scalars = [10, 100, 500, 100]
+	number_of_addition_of_scalars = [10, 50, 100, 200, 500, 700, 1000]
 
 	results: dict[int, List[int]] = {}
 	repeats = 10
@@ -305,7 +305,7 @@ def experiment_5():
 		"Bob": {},
 	}
 
-	number_of_addition_of_scalars = [10, 100, 500, 100]
+	number_of_addition_of_scalars = [10, 50, 100, 200, 500, 700, 1000]
 
 	results: dict[int, List[int]] = {}
 	repeats = 10
@@ -339,8 +339,8 @@ def main():
 		log.setLevel(logging.WARNING)
 
 	# Uncomment the one you want to run
-	experiment_1()
-	# experiment_2()
+	# experiment_1()
+	experiment_2()
 	# experiment_3()
 	# experiment_4()
 	# experiment_5()
