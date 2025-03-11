@@ -334,6 +334,8 @@ def experiment_5():
 
 
 def main():
+	sys.setrecursionlimit(2000)
+
 	if DISABLE_LOGS:
 		log = logging.getLogger("werkzeug")
 		log.setLevel(logging.WARNING)
