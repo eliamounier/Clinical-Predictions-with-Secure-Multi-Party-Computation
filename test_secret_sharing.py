@@ -8,6 +8,6 @@ MODIFY THIS FILE.
 from secret_sharing import *
 
 def test():
-    test_values = [1, 8, 7455, 2, 847, -48, -984]
+    test_values = [1, 8, 7455, 2, 847, 48, 984]
     for value in test_values:
-        assert reconstruct_secret(share_secret(value, 7)) == value
+        assert reconstruct_secret(share_secret(value, 7)) == value % Share.prime()

@@ -7,6 +7,7 @@ MODIFY THIS FILE.
 
 from ttp import TrustedParamGenerator
 from random import shuffle
+from secret_sharing import Share
 
 def test():
     ttp = TrustedParamGenerator()
@@ -16,12 +17,12 @@ def test():
     
     operation_ids = ["Go to la Migros", "Buy Bananas", "Make banana cake", "Eat banana cake"]
     for op_id in operation_ids:
-        a, b, c = 0, 0, 0
+        a, b, c = Share(0), Share(0), Share(0)
         shuffled_ids = list(participant_ids)
         shuffle(shuffled_ids)
         for participant_id in shuffled_ids:
             a_i, b_i, c_i = ttp.retrieve_share(participant_id, op_id)
-            a += a_i.value
-            b += b_i.value
-            c += c_i.value
-        assert a * b == c
+            a += a_i
+            b += b_i
+            c += c_i
+        assert (a * b).value == c.value

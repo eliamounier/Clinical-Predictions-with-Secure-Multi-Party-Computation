@@ -72,10 +72,6 @@ class SMCParty:
         
         # Step 2: Receive the shares.
         self.shares_dict: Dict[str, Share] = {}
-        # for party in parties:
-        #     for secret in self.value_dict:
-        #         share = Share.deserialize(self.comm.retrieve_private_message(secret.id))
-        #         self.shares_dict[secret.id] = share
 
         self.process_expression(expr)
         shares = [Share.deserialize(self.comm.retrieve_public_message(sender_id, expr.id)) for sender_id in self.protocol_spec.participant_ids]
@@ -87,7 +83,7 @@ class SMCParty:
     def process_expression(
             self,
             expr: Expression
-        ):
+        ) -> Share:
         if isinstance(expr, AddOp):
             a = self.process_expression(expr.a)
             b = self.process_expression(expr.b)

@@ -13,7 +13,6 @@ from secret_sharing import (
 
 from random import getrandbits
 
-
 class TrustedParamGenerator:
     """
     A trusted third party that generates random values for the Beaver triplet multiplication scheme.
@@ -38,9 +37,9 @@ class TrustedParamGenerator:
         return self.triplet_shares[op_id][client_id]
 
     def generate_triplet(self, op_id: str):
-        a = getrandbits(255)
-        b = getrandbits(255)
-        c = a * b
+        a = getrandbits(255) % Share.prime()
+        b = getrandbits(255) % Share.prime()
+        c = (a * b) % Share.prime()
         number_of_participants = len(self.participant_ids)
         self.triplet_shares[op_id] = dict(
             zip(

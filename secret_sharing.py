@@ -6,7 +6,6 @@ from __future__ import annotations
 
 from typing import List, Optional
 import random
-import time
 import base64
 
 import json
@@ -29,7 +28,7 @@ class Share:
         if id is None:
             id = gen_id()
         self.id = id
-        self.value = value
+        self.value = value % Share.prime()
 
     def __repr__(self):
         # Helps with debugging.
@@ -61,6 +60,10 @@ class Share:
         data = json.loads(serialized)
         return Share(data['value'], bytes.fromhex(data['id']))
     
+    @staticmethod
+    def prime() -> int:
+        return 10000013983
+    
 def share_secret(secret: int, num_shares: int) -> List[Share]:
     """Generate secret shares."""
     shares = [random.randint(-abs(secret), abs(secret)) for _ in range(num_shares - 1)]
@@ -73,7 +76,7 @@ def reconstruct_secret(shares: List[Share]) -> int:
     secret = 0
     for share in shares:
         secret += share.value
-    return secret
+    return secret % Share.prime()
 
 
 # Feel free to add as many methods as you want.
