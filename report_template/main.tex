@@ -11,7 +11,7 @@
 
 
 \title{CS-523 SMCompiler Report}
-\author{Author 1, Author 2, Author 3}
+\author{Clément Monera, Dominique Huang, Élia Mounier-Poulat}
 \date{}
 
 \begin{document}
@@ -26,13 +26,15 @@
 \end{abstract}
 
 \section{Introduction}
-Give a brief introduction about the project and its aims.
+Secure Multi-Party Computation (SMC) enables multiple parties to jointly compute a function over their inputs while keeping those inputs private. This project implements an SMC framework in Python 3, focusing on arithmetic circuits such as addition and multiplication of secret and scalar values. We assume an honest-but-curious adversarial model and the existence of a trusted third party for communication. The implementation builds on the skeleton provided at: \url{https://github.com/spring-epfl/CS-523-public}. This report is structured as follows: Section 2 describes the threat model, Section 3 details the implementation, Section 4 presents the results and performance analysis and Section 5 shows an application of SMC.
 
 \section{Threat model}
-Describe the threat model for the SMC framework that you have implemented.
+The threat model assumes an honest-but-curious adversary, where parties follow the protocol but may attempt to learn additional information from the messages they receive. The adversary can observe all communication between parties but cannot modify or disrupt the messages. We assume the existence of a trusted third party for secure communication and that no collusion occurs between parties. The primary security goals are to ensure input privacy and the correctness of the computed results.
 
 \section{Implementation details}
-Provide any useful details about your implementation.
+The implementation builds on the provided skeleton, which includes a communication protocol with the trusted third party. We implemented secret sharing where a secret number is divided into shares distributed among the parties. A large prime number was chosen to define the finite field in which computations are performed. Each party locally computes its share of the result based on the given arithmetic expression (e.g., addition or multiplication of secret and scalar values). After local computation, parties publish their results, which are then combined to reconstruct the final output. The following formulas were used for secret sharing and reconstruction: [METTRE LES FORMULES ICI].
+
+We implemented unit tests for each component, including secret sharing, arithmetic operations, and reconstruction. Performance testing was conducted to evaluate both computation and communication costs, with results presented in Section 4.
 
 \section{Performance evaluation}
 Report the computation and communication cost of the framework for different circuit and protocol parameters.
