@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 from datetime import datetime
-
+import argparse
 
 from server import app, run
 from smc_party import SMCParty
@@ -107,18 +107,22 @@ def run_experiment(
 	unregister_after_request(calculate_response_size)
 
 	for result in results:
-		assert result == expected % Share.prime(), f"expected: {expected}, result: {result}"
+		assert (
+			result == expected % Share.prime()
+		), f"expected: {expected}, result: {result}"
 
 	return bytes_received.value, bytes_sent.value
 
 
-def process_results(experiment_name, results: dict[int, List[int]]):
+def generate_experiment_save_name(experiment_name):
 	current_time = datetime.now().strftime("%d-%m_%H-%M-%S")
-	filename = f"results/{experiment_name}_{current_time}.json"
+	return f"results/{experiment_name}_{current_time}"
 
-	os.makedirs("results", exist_ok=True)
-	with open(filename, "w") as file:
-		json.dump(results, file)
+
+def process_results(results: dict[int, List[int]], experiment_save_name=None):
+	if experiment_save_name:
+		with open(f"{experiment_save_name}.json", "w") as file:
+			json.dump(results, file)
 
 	x = list(results.keys())
 	y_received = [
@@ -136,20 +140,44 @@ def process_results(experiment_name, results: dict[int, List[int]]):
 
 	return x, y_received, yerr_received, y_sent, yerr_sent
 
-def show_plot(x, y_received, yerr_received, y_sent, yerr_sent, x_axis_title):
+
+def generate_plot(
+	x,
+	y_received,
+	yerr_received,
+	y_sent,
+	yerr_sent,
+	x_axis_title,
+	title=None,
+	experiment_save_name=None,
+):
+	plt.clf()
+
 	# Create the plot with error bars
-	plt.errorbar(x, y_received, yerr=yerr_received, fmt="-o", label="Total number of bytes received")
-	plt.errorbar(x, y_sent, yerr=yerr_sent, fmt="-o", label="Total number of bytes sent")
+	plt.errorbar(
+		x,
+		y_received,
+		yerr=yerr_received,
+		fmt="-o",
+		label="Total number of bytes received",
+	)
+	plt.errorbar(
+		x, y_sent, yerr=yerr_sent, fmt="-o", label="Total number of bytes sent"
+	)
 
 	# Labels and title
+	plt.title(title)
 	plt.xlabel(x_axis_title)
 	plt.ylabel("")
 
 	# Show the legend
 	plt.legend()
 
-	# Display the plot
-	plt.show()
+	if experiment_save_name:
+		plt.savefig(f"{experiment_save_name}.png")
+	else:
+		plt.show()
+
 
 # effect of the number of participants
 def experiment_1():
@@ -178,11 +206,22 @@ def experiment_1():
 			results[n].append(run_experiment(parties, expr, expected))
 			print(f"  {n} participants, repeat n°{r + 1} done")
 
+	save_name = generate_experiment_save_name("network_exp1")
 	x, y_received, yerr_received, y_sent, yerr_sent = process_results(
-		"network_exp1", results
+		results, save_name
+	)
+	generate_plot(
+		x,
+		y_received,
+		yerr_received,
+		y_sent,
+		yerr_sent,
+		"Number of parties",
+		"Results with 1 addition",
+		save_name,
 	)
 	print("Experiment 1 done !")
-	show_plot(x, y_received, yerr_received, y_sent, yerr_sent, "Number of parties")
+
 
 # effect of the number of addition operations
 def experiment_2():
@@ -216,11 +255,22 @@ def experiment_2():
 			results[n].append(run_experiment(parties, expr, expected))
 			print(f"  {n} additions, repeat n°{r + 1} done")
 
+	save_name = generate_experiment_save_name("network_exp2")
 	x, y_received, yerr_received, y_sent, yerr_sent = process_results(
-		"network_exp2", results
+		results, save_name
+	)
+	generate_plot(
+		x,
+		y_received,
+		yerr_received,
+		y_sent,
+		yerr_sent,
+		"Number of addition operations",
+		f"Results with {len(parties.keys())} parties",
+		save_name,
 	)
 	print("Experiment 2 done !")
-	show_plot(x, y_received, yerr_received, y_sent, yerr_sent, "Number of addition operations")
+
 
 # effect of the number of additions of scalars
 def experiment_3():
@@ -252,11 +302,22 @@ def experiment_3():
 			results[n].append(run_experiment(parties, expr, expected))
 			print(f"  {n} additions of scalars, repeat n°{r + 1} done")
 
+	save_name = generate_experiment_save_name("network_exp3")
 	x, y_received, yerr_received, y_sent, yerr_sent = process_results(
-		"network_exp3", results
+		results, save_name
+	)
+	generate_plot(
+		x,
+		y_received,
+		yerr_received,
+		y_sent,
+		yerr_sent,
+		"Number of additions of scalars",
+		f"Results with {len(parties.keys())} parties",
+		save_name,
 	)
 	print("Experiment 3 done !")
-	show_plot(x, y_received, yerr_received, y_sent, yerr_sent, "Number of additions of scalars")
+
 
 # effect of the number of multiplication operations
 def experiment_4():
@@ -290,15 +351,28 @@ def experiment_4():
 			results[n].append(run_experiment(parties, expr, expected))
 			print(f"  {n} multiplication operations, repeat n°{r + 1} done")
 
+	save_name = generate_experiment_save_name("network_exp4")
 	x, y_received, yerr_received, y_sent, yerr_sent = process_results(
-		"network_exp4", results
+		results, save_name
+	)
+	generate_plot(
+		x,
+		y_received,
+		yerr_received,
+		y_sent,
+		yerr_sent,
+		"Number of multiplication operations",
+		f"Results with {len(parties.keys())} parties",
+		save_name
 	)
 	print("Experiment 4 done !")
-	show_plot(x, y_received, yerr_received, y_sent, yerr_sent, "Number of multiplication operations")
+
 
 # effect of the number of multiplications of scalars
 def experiment_5():
-	print("Starting experiment 4: effect of the number of multiplications of scalars...")
+	print(
+		"Starting experiment 4: effect of the number of multiplications of scalars..."
+	)
 
 	parties = {
 		"Alice": {},
@@ -326,11 +400,21 @@ def experiment_5():
 			results[n].append(run_experiment(parties, expr, expected))
 			print(f"  {n} multiplications of scalars, repeat n°{r + 1} done")
 
+	save_name = generate_experiment_save_name("network_exp5")
 	x, y_received, yerr_received, y_sent, yerr_sent = process_results(
-		"network_exp5", results
+		results, save_name
+	)
+	generate_plot(
+		x,
+		y_received,
+		yerr_received,
+		y_sent,
+		yerr_sent,
+		"Number of multiplications of scalars",
+		f"Results with {len(parties.keys())} parties",
+		save_name
 	)
 	print("Experiment 5 done !")
-	show_plot(x, y_received, yerr_received, y_sent, yerr_sent, "Number of multiplications of scalars")
 
 
 def main():
@@ -340,13 +424,33 @@ def main():
 		log = logging.getLogger("werkzeug")
 		log.setLevel(logging.WARNING)
 
+	os.makedirs("results", exist_ok=True)
 	# Uncomment the one you want to run
 	# experiment_1()
 	experiment_2()
-	# experiment_3()
-	# experiment_4()
-	# experiment_5()
+	experiment_3()
+	experiment_4()
+	experiment_5()
 
 
 if __name__ == "__main__":
-	main()
+	parser = argparse.ArgumentParser(description="A simple argparse example.")
+	# Add arguments
+	parser.add_argument("-f", type=str, required=False, help="file to use")
+	parser.add_argument("-x", type=str, required=False, help="x axis name")
+	parser.add_argument("-t", type=str, required=False, help="plot title")
+
+	# Parse the arguments
+	args = parser.parse_args()
+
+	# Access the arguments
+	if args.f:
+		with open("results/" + args.f, "r") as file:
+			data = json.load(file)
+			results = {}
+			for key, value in data.items():
+				results[int(key)] = value
+		x, y_received, yerr_received, y_sent, yerr_sent = process_results(results)
+		generate_plot(x, y_received, yerr_received, y_sent, yerr_sent, args.x, args.t)
+	else:
+		main()
