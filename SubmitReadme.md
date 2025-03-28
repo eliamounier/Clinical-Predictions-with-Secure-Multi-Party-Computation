@@ -12,6 +12,7 @@ You can find the project made by Clément Monera, Dominique Huang, Elia Mounier-
 #### Files
 
 Components for building an SMC protocol:
+
 * `expression.py`—Tools for defining arithmetic expressions.
 * `secret_sharing.py`—Secret sharing scheme
 * `ttp.py`—Trusted parameter generator for the Beaver multiplication scheme.
@@ -22,20 +23,24 @@ Components for building an SMC protocol:
 * `test_secret_sharing.py`—Template of a test suite for secret sharing.
 
 
-* Code that handles the communication:
+Code that handles the communication:
+
 * `protocol.py`—Specification of SMC protocol
 * `communication.py`—SMC party-side of communication
 * `server.py`—Trusted server to exchange information between SMC parties
 
-* Code that handles performance testing:
+Code that handles performance testing:
+
 * `performance.py`—Code for testing the performance.
 * `network_performances.py`—Code for testing the network performances.
 
-* Results files:
+Results files:
+
 * `results`—Contains files of performance testing
 * `plots`—Contains plots of performance testing
 
-* Application
+Application
+
 * `data_analysis.ipynb`—Code of an application of SMC
 
 #### Performance
