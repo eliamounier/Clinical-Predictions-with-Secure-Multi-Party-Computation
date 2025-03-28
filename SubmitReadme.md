@@ -41,7 +41,8 @@ Results files:
 
 Application
 
-* `data_analysis.ipynb`—Code of an application of SMC
+* `test_application.py`—Code of an application of SMC
+* `data_analysis.ipynb`—Analysis of data
 
 #### Performance
 
