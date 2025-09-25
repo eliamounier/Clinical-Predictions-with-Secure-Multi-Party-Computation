@@ -2,7 +2,7 @@
 
 **Authors:** Clément Moréna, Dominique Huang, Élia Mounier-Poulat  
 **Course Project:** EPFL – Secure Multi-Party Computation  
-**Date:** 2025
+**Date:** 2025  
 
 ---
 
@@ -21,9 +21,30 @@ We evaluate performance in terms of computation and communication cost, and demo
 
 ---
 
-## ⚙️ Usage
-- Implemented in **Python 3.9**  
-- Unit tests for secret sharing, arithmetic operations, and reconstruction  
-- Performance benchmarks included  
+## 🗂️ Project Skeleton
+We implemented the SMC client, the trusted parameter generator, secret sharing mechanisms, and tools for specifying expressions to compute.  
+
+Main files:
+- `expression.py` — Tools for defining arithmetic expressions  
+- `secret_sharing.py` — Additive secret sharing scheme  
+- `ttp.py` — Trusted parameter generator (Beaver triplets)  
+- `smc_party.py` — Implementation of an SMC party  
+- `test_integration.py` — Integration test suite  
+- `test_expression.py`, `test_ttp.py`, `test_secret_sharing.py` — Unit test templates  
+
+Files to handle communication & protocol:  
+- `protocol.py`  
+- `communication.py`  
+- `server.py`  
+
+---
+
+## 🧪 Testing
+We provide an integration test suite implemented with **pytest**.  
+
+Run all tests:
+```
+python3 -m pytest
+```
 
 
