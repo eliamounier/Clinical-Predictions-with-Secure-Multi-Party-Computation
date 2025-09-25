@@ -39,9 +39,16 @@ Files to handle communication & protocol:
 
 ---
 
-## 🧪 Testing
-We provide an integration test suite implemented with **pytest**.  
+## 🧪 Installation & Testing
 
+This code was implemented and tested with Python 3.9, you may want to install a
+higher version, in which case, ensure that you only use features supported by
+Python 3.9 in your code.
+
+You can install the dependant python libraries by running the command
+```
+python3 -m pip install -r requirements.txt
+```
 Run all tests:
 ```
 python3 -m pytest
