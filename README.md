@@ -2,7 +2,7 @@
 
 **Authors:** Clément Moréna, Dominique Huang, Élia Mounier-Poulat  
 **Course Project:** EPFL – Secure Multi-Party Computation  
-**Date:** 2025  
+**Date:** 2025 Spring Semester
 
 ---
 
